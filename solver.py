@@ -63,7 +63,7 @@ def select_native_boundary_nodes(nodes):
     """
     xmax = nodes[:, 0].max()
     
-    # 1. Fixed Supports: Exact M8 Hole Cylinders on the back flange face (X ≈ 75mm)
+
     hole_centers_z = [20.0, 57.5, 95.0]
     fixed_nodes = []
     
@@ -78,15 +78,14 @@ def select_native_boundary_nodes(nodes):
 
     fixed_nodes = np.array(list(set(fixed_nodes)))
 
-    # 2. Load Nodes: Inset into the actual rope slot cutouts (avoiding the outer overhang tip)
-    # Shifting X range inward (e.g., between 25.0mm and 40.0mm) to establish the correct moment arm.
+
     load_nodes = []
     
     for i, node in enumerate(nodes):
         x, y, z = node[0], node[1], node[2]
-        # Target the slot interior region rather than the far edge tip
+
         if 25.0 <= x <= 40.0:
-            # Restrict to the lower half of the slots where the rope bears down
+
             if 15.0 <= y <= 35.0 and z <= 42.0:
                 load_nodes.append(i)
 
@@ -135,7 +134,7 @@ def run_fea_analysis(mesh_data, material_props, reference_load_n=100.0, pla_uts_
 
     K = sp.coo_matrix((data_values, (row_indices, col_indices)), shape=(n_dof, n_dof)).tocsr()
 
-    # Apply pure downward vertical force vector (-Z direction) distributed across load nodes
+
     F = np.zeros(n_dof)
     if len(load_nodes) > 0:
         force_per_node = np.array([0.0, 0.0, -reference_load_n]) / len(load_nodes)
